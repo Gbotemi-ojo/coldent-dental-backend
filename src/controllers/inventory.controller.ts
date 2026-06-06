@@ -1,6 +1,7 @@
 // src/controllers/inventory.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import { inventoryService } from '../services/inventory.service';
+import { safeInt } from '../utils/helpers';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -23,7 +24,7 @@ export class InventoryController {
   }
 
   getItemById = async (req: Request, res: Response): Promise<void> => {
-    const itemId = parseInt(req.params.id);
+    const itemId = safeInt(req.params.id);
     if (isNaN(itemId)) {
       res.status(400).json({ error: 'Invalid item ID.' });
       return;
@@ -50,8 +51,8 @@ export class InventoryController {
       return;
     }
 
-    const parsedQuantity = parseInt(quantity);
-    const parsedUnitPrice = parseFloat(unitPrice);
+    const parsedQuantity = safeInt(quantity);
+    const parsedUnitPrice = parseFloat(String(unitPrice));
 
     if (isNaN(parsedQuantity) || parsedQuantity < 0) {
       res.status(400).json({ error: 'Quantity must be a non-negative number.' });
@@ -80,7 +81,6 @@ export class InventoryController {
 
     } catch (error: any) {
       console.error('Error in addItem controller:', error);
-      // Catch specific Drizzle/DB errors here if needed, or handle in service layer
       if (error.code === 'ER_DUP_ENTRY' || (error.message && error.message.includes('UNIQUE constraint failed'))) {
         res.status(409).json({ error: 'An inventory item with this name already exists.' });
         return;
@@ -90,7 +90,7 @@ export class InventoryController {
   }
 
   updateItem = async (req: Request, res: Response): Promise<void> => {
-    const itemId = parseInt(req.params.id);
+    const itemId = safeInt(req.params.id);
     const { name, description, unitOfMeasure, reorderLevel, costPerUnit, supplier, category } = req.body;
 
     if (isNaN(itemId)) {
@@ -124,7 +124,7 @@ export class InventoryController {
   }
 
   deleteItem = async (req: Request, res: Response): Promise<void> => {
-    const itemId = parseInt(req.params.id);
+    const itemId = safeInt(req.params.id);
 
     if (isNaN(itemId)) {
       res.status(400).json({ error: 'Invalid item ID.' });
@@ -185,7 +185,7 @@ export class InventoryController {
   }
 
   getTransactionsByItemId = async (req: Request, res: Response): Promise<void> => {
-    const itemId = parseInt(req.params.itemId);
+    const itemId = safeInt(req.params.itemId);
     if (isNaN(itemId)) {
       res.status(400).json({ error: 'Invalid item ID.' });
       return;
@@ -211,7 +211,7 @@ export class InventoryController {
   }
 
   getItemStockStatus = async (req: Request, res: Response): Promise<void> => {
-    const itemId = parseInt(req.params.id);
+    const itemId = safeInt(req.params.id);
     if (isNaN(itemId)) {
       res.status(400).json({ error: 'Invalid item ID.' });
       return;

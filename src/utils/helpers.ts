@@ -4,6 +4,16 @@ import * as bcrypt from 'bcrypt';
 const saltRounds = 10; // Standard salt rounds for bcrypt
 
 /**
+ * This function swallows the type error by handling the array check manually.
+ * Safely parses an integer from an Express request parameter.
+ */
+export const safeInt = (param: string | string[] | undefined | any): number => {
+  if (!param) return NaN;
+  const str = Array.isArray(param) ? param[0] : param;
+  return parseInt(str, 10);
+};
+
+/**
  * Hashes a plain-text password using bcrypt.
  * @param password The plain-text password to hash.
  * @returns A promise that resolves to the hashed password string.
