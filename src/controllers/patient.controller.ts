@@ -238,19 +238,23 @@ export class PatientController {
 
   sendProcedureSpecificReminder = async (req: Request, res: Response): Promise<void> => {
     const patientId = safeInt(req.params.patientId);
-    const { type } = req.params;
+    
+    // Safely extract the type parameter as a string
+    const rawType = req.params.type;
+    const typeStr = Array.isArray(rawType) ? rawType[0] : rawType;
 
     if (isNaN(patientId)) {
         res.status(400).json({ error: 'Invalid patient ID.' });
         return;
     }
-    if (!type) {
+    if (!typeStr) {
         res.status(400).json({ error: 'Reminder type is required.' });
         return;
     }
 
     try {
-        const result = await patientService.sendProcedureSpecificReminder(patientId, type);
+        // Pass the safely extracted string
+        const result = await patientService.sendProcedureSpecificReminder(patientId, typeStr as string);
         if (!result.success) {
             const statusCode = result.message.includes('not found') ? 404 : 400;
             res.status(statusCode).json({ error: result.message });
