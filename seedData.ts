@@ -20,8 +20,8 @@ async function seed() {
 
     const db = drizzle(pool, { schema, mode: 'default' });
 
-    const OWNER_USERNAME = '';
-    const OWNER_PASSWORD = ''; // Change this to a strong password for actual use!
+    const OWNER_USERNAME = 'a';
+    const OWNER_PASSWORD = 'b'; // Change this to a strong password for actual use!
     const OWNER_EMAIL = '';
 
     try {
